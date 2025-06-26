@@ -19,9 +19,13 @@ Either replace the stages with your own modules, or use what is built in by defa
 
 Run the system by running `./input/main.sh` and providing your dicoms in the way your input module expects. See Input below for more details on how this works with the default set up and other options.
 
+
+
 ## Default Stages
 
-The default stages are as follows
+The default stages are listed below. 
+
+To debug these default modules, you can read outputs in ./input/nohup.out, or in log files added to your dicom directory. 
 
 ### Input
 
@@ -30,6 +34,8 @@ The default stages are as follows
 Alternatively, you can directly trigger processing by calling `/input/on-directory-created.sh <full-path-to-a-directory-containing-your-unsorted-dicoms-for-one-patients-scan>` 
 
 **To ensure the script uses the sequences you want, you must edit the search parameters within `on-directory-created.sh`. Please read comments in that file before proceeding.**
+
+There are two utility scripts here too: `is-directory-monitoring-running.sh` and `kill-directory-monitoring.sh`. They do what their names suggest.
 
 ### Processing
 
