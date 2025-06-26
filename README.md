@@ -54,7 +54,7 @@ Monitor the output directory. When new dicom files arrive, use a storescu instan
 ## Disclaimer
 ### Subject to change
 
-All public interfaces are subject to change without notice.
+All aspects of this code base are subject to change without notice.
 
 ### Not a registered medical device
 
