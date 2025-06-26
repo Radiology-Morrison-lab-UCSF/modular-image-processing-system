@@ -12,4 +12,4 @@ dir_fgatir_dicoms="$2"
 loc_processed_qsm="$3"
 
 echo "Processing not implemented"  >&2
-EXIT 1
+exit 1
