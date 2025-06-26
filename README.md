@@ -11,13 +11,25 @@ All stages can be swapped so long as code in this repository is updated to refle
 
 You may need some basic IT help to initially set this up. Please read this full Read Me before beginning installation.
 
+## Getting Started
+
+On an Ubuntu system (others may work but are untested), cd to the top directory and run `./install.sh`
+
+Either replace the stages with your own modules, or use what is built in by default. If you choose the default set up  you will still need to customise Input and Output stages (see notes within _Default Stages_, below)
+
+Run the system by running `./input/main.sh` and providing your dicoms in the way your input module expects. See Input below for more details on how this works with the default set up and other options.
+
 ## Default Stages
 
-The default stages are as follows:
+The default stages are as follows
 
 ### Input
 
-Manually copy DICOM files from a memory stick or network drive into the designated folder. Code will organise your dicoms and trigger the processing stage.
+`input/main.sh` will listen for changes to a specified folder and trigger processing when new directories of dicoms (one directory per scan session) are copied into it. **You need to customise this to point to a directory on your system.** Note that this has a default delay of one minute, which may be insufficient if your files are arriving via PACS into that directory. See the code for more details/options.
+
+Alternatively, you can directly trigger processing by calling `/input/on-directory-created.sh <full-path-to-a-directory-containing-your-unsorted-dicoms-for-one-patients-scan>` 
+
+**To ensure the script uses the sequences you want, you must edit the search parameters within `on-directory-created.sh`. Please read comments in that file before proceeding.**
 
 ### Processing
 
