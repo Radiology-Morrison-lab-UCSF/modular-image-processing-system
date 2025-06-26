@@ -49,3 +49,19 @@ Set up a DICOM node that your scanner can push to. When DICOMs are pushed, this 
 ### Output
 
 Monitor the output directory. When new dicom files arrive, use a storescu instance to push them to PACS.
+
+
+## Disclaimer
+### Subject to change
+
+All public interfaces are subject to change without notice.
+
+### Not a registered medical device
+
+This repository and its associated code is not a registered medical device and has not undergone third-party testing or verification of any kind.
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+## Licenses
+Copyright 2025 Lee Reid and UCSF
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
