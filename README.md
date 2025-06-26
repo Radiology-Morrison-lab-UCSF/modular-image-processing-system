@@ -17,9 +17,7 @@ On an Ubuntu system (others may work but are untested), cd to the top directory 
 
 Either replace the stages with your own modules, or use what is built in by default. If you choose the default set up  you will still need to customise Input and Output stages (see notes within _Default Stages_, below)
 
-Run the system by running `./input/main.sh` and providing your dicoms in the way your input module expects. See Input below for more details on how this works with the default set up and other options.
-
-
+Run the system by running `./main.sh` and providing your dicoms in the way your input module expects. The default input stage will either monitor a directory for data or you can trigger processing without monitoring folders (see Default Stages for details)
 
 ## Default Stages
 
@@ -39,6 +37,8 @@ There are two utility scripts here too: `is-directory-monitoring-running.sh` and
 
 ### Processing
 
+This is automatically triggered. You should not need to call this directly.
+
 QSM images are:
 1. converted into NIfTI format
 2. Skull stripped using HD-BET
@@ -46,13 +46,15 @@ QSM images are:
 4. Aligned to the T1 or provided FGATIR
 5. Saved as NIfTI files
 
-This will then trigger DICOM conversion.
-
 ### DICOM conversion
+
+This is automatically triggered. You should not need to call this directly.
 
 Converts processed NIfTI files into DICOMs compatible with BrainLab and StealthStation software.
 
 ### Output
+
+This is automatically triggered. You should not need to call this directly.
 
 Dicoms are moved to a designated folder, such as a memory stick or network drive.  
 
