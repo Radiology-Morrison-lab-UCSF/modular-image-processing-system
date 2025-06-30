@@ -7,12 +7,15 @@ set -e
 # This path should have two directories:
 #       fgatir/<all fgatir dicom files>
 #       qsm/<all qsm dicom files>
+#       T1/<all qsm dicom files>
 
 
 dir_sorted_dicoms=$(realpath "$1")
 
 dir_raw_qsm="$dir_sorted_dicoms"/qsm/
 dir_raw_fgatir="$dir_sorted_dicoms"/fgatir/
+dir_raw_t1="$dir_sorted_dicoms"/T1/
+
 
 dir_processed_qsm=$(mktemp -d)
 loc_processed_qsm="$dir_processed_qsm"/qsm.nii.gz
@@ -23,7 +26,7 @@ dir_processed_qsm_dicoms="$dir_processed_qsm"/dicoms/
 trap "rm -rf \"$dir_processed_qsm\"" EXIT
 
 echo "Running QSM Processing"
-bash $(dirname "$BASH_SOURCE[0]")/processing/main.sh "$dir_raw_qsm" "$dir_raw_fgatir" "$loc_processed_qsm"
+bash $(dirname "$BASH_SOURCE[0]")/processing/main.sh "$dir_raw_qsm" "$dir_raw_t1" "$dir_raw_fgatir" "$loc_processed_qsm"
 
 
 echo "Running Dicom Generation"

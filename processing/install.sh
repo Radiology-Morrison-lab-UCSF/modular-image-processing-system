@@ -6,8 +6,10 @@ set -e
 
 echo "Processing Stage Install Beginning"
 
-dir_this_dir=$(realpath $(dirname "$BASH_SOURCE[0]"))/
-loc_final_sif="$dir_this_dir/qsm-processing-pipeline.sif"
+dir_this_module=$(realpath $(dirname "$BASH_SOURCE[0]"))/
+loc_final_sif="$dir_this_module/qsm-processing-pipeline.sif"
+
+source "$dir_this_module/paths.sh"
 
 BuildApptainerContainer() {
     local dir_src=$(mktemp -d)
@@ -18,10 +20,11 @@ BuildApptainerContainer() {
     cd "$dir_src"
     ./build-as-apptainer.sh
 
-    cp *.sif "$dir_this_dir/qsm-processing-pipeline.sif"
-    cd "$dir_this_dir"
+    cp *.sif "$loc_qsm_apptainer_image"
+    cd "$dir_this_module"
 }
 
+SetPaths
 
 if [ -f "$loc_final_sif" ]; then
     echo "Install skipped as found $loc_final_sif"

@@ -9,18 +9,21 @@ set -e
 # Note that these are not case sensitive. 
 # There is no checking for multiple matching paths so make these specific 
 # and only push data you want processed. Note that if paths exactly matching
-# qsm or fgatir are found, these are used preferentially
+# qsm / fgatir / t1 are found, these are used preferentially
 qsm_name_should_match="*qsm*"
 fgatir_name_should_match="*fgatir*"
+t1_name_should_match="*mprage*"
 
 # Set Paths
 dir_of_this_script=$(realpath $(dirname "$BASH_SOURCE[0]"))
 dir_created=$(realpath "$1")
 loc_log="$dir_created/log.txt"
 
-dir_organised_dicoms=$(mktemp -d) # this must not be inside of the folder that is monitored for new dicoms
-dir_fgatir="$dir_organised_dicoms/fgatir/" # this can be changed to another path so long as it will contain (only) fgatir or t1 dicoms (and not both!)
-dir_qsm="$dir_organised_dicoms/qsm/" # this can be changed to another path so long as it only contains QSM dicoms
+dir_organised_dicoms=$(mktemp -d) # this can be changed but must NOT be inside of the folder that is monitored for new dicoms
+dir_fgatir="$dir_organised_dicoms/fgatir/" # Do not change
+dir_qsm="$dir_organised_dicoms/qsm/" # Do not change
+dir_t1="$dir_organised_dicoms/T1/" # Do not change
+
 trap 'echo cleaning up... && [[ -d "$dir_organised_dicoms" ]] && rm -rf "$dir_organised_dicoms"' EXIT INT TERM
 
 
@@ -111,6 +114,8 @@ OrganiseDicoms
 
 FindAndRenameSequenceDir "$dir_qsm" "QSM" "$qsm_name_should_match"
 FindAndRenameSequenceDir "$dir_fgatir" "FGATIR" "$fgatir_name_should_match"
+FindAndRenameSequenceDir "$dir_t1" "T1-MPRAGE" "$t1_name_should_match"
+
 
 Log "Calling input-callback..."
-bash "$dir_of_this_script/../input-callback.sh" "$dir_created"
+bash "$dir_of_this_script/../input-callback.sh" "$dir_organised_dicoms"
