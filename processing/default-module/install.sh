@@ -36,7 +36,7 @@ InstallDcm2niix() {
 }
 
 InstallCreateDicom() {
-    echo Not implemented
+    echo Create Dicom Not implemented
     exit 1
 }
 

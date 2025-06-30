@@ -118,4 +118,4 @@ FindAndRenameSequenceDir "$dir_t1" "T1-MPRAGE" "$t1_name_should_match"
 
 
 Log "Calling input-callback..."
-bash "$dir_of_this_script/../input-callback.sh" "$dir_organised_dicoms"
+bash "$dir_of_this_script/../../input-callback.sh" "$dir_organised_dicoms"
