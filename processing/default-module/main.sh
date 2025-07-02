@@ -3,21 +3,22 @@ set -e
 
 # This file processess QSM images
 # It must run in bash and take in the following positional arguments:
-# <directory-of-unprocessed-qsm-dicoms> <directory-of-fgatir-dicoms> <full-path-to-save-the-final-qsm-nifti-to>
+# <directory-of-unprocessed-qsm-dicoms> <dir-t1-dicoms> <dir-fgatir-dicoms> <full-path-to-save-the-final-qsm-nifti-to> [full-path-a-working-dir (optional)]
 # e.g. used like
 # bash ./main.sh /path/to/qsm-dicoms/ /path/to/t1-dicoms/ /path/to/fgatir-dicoms/ /path/to/save/final/qsm/to/qsm.nii.gz
 
 ParseInputs() {
 
-  if [[ $# -lt 3 || $# -gt 4 ]]; then
-    echo "Usage: $0 <dir-unprocessed-qsm-dicoms> <dir-t1-dicoms> <dir-fgatir-dicoms> [dir-working]"
+  if [[ $# -lt 4 || $# -gt 5 ]]; then
+    echo "Usage: $0 <dir-unprocessed-qsm-dicoms> <dir-t1-dicoms> <dir-fgatir-dicoms> <loc-final-result> [dir-working]"
     exit 1
   fi
 
   dir_input_unprocessed_qsm_dicoms="$1"
   dir_input_t1_dicoms="$2"
   dir_input_fgatir_dicoms="$3"
-  dir_working="$4"
+  loc_final_qsm="$4"
+  dir_working="$5"
 
   dir_this_module=$(realpath $(dirname "$BASH_SOURCE[0]"))/
 
@@ -53,7 +54,7 @@ RunQSMXTPipeline() {
   cp -rn "$dir_input_unprocessed_qsm_dicoms" "${dir_dicoms_qsm%/}"
 
   # Check if this has completed already
-  if [[ -f "$loc_qsmxt_qsm_brainmask" && -f "$fn_qsmxt_qsm_processed" && -f "$loc_qsmxt_t1" && -f "$loc_qsmxt_t1_brainmask" && -f "$loc_qsmxt_t1ToQSM" ]]; then
+  if [[ -f "$loc_qsmxt_qsm_brainmask" && -f "$dir_qsmxt_out/$fn_qsmxt_qsm_processed" && -f "$loc_qsmxt_t1" && -f "$loc_qsmxt_t1_brainmask" && -f "$loc_qsmxt_t1ToQSM" ]]; then
     echo "QSM-XT outputs found. Processing skipped"
     return
   fi
@@ -76,8 +77,10 @@ AlignWithFGATIR() {
 
   cd "$dir_this_module"
   source ./env/bin/activate
-#  mkdir -p "$dir_aligned_qsm_out"
-  python -m main --dir_input_dicoms "$dir_dicoms_raw" --dir_input_qsmxt "$dir_qsmxt_out" --qsm_filename "$fn_qsmxt_qsm_processed" --output_dir "$dir_aligned_qsm_out"
+  mkdir -p "$dir_aligned_qsm_out"
+  python -m main --dir_input_dicoms "$dir_dicoms_raw" --dir_input_qsmxt "$dir_qsmxt_out" --qsm_filename "$fn_qsmxt_qsm_processed" --output_dir "$dir_aligned_qsm_out" --dcm2niix "$loc_dcm2niix"
+
+  echo "Alignment complete"
 }
 
 ParseInputs "$@"
@@ -90,3 +93,9 @@ SetPaths "$dir_working"
 RunQSMXTPipeline
 
 AlignWithFGATIR
+
+if [[ "$loc_final_qsm" == *.nii.gz ]]; then
+  gzip -c "$dir_aligned_qsm_out/qsm-post-processed.nii" > "$loc_final_qsm"
+else
+  cp "$dir_aligned_qsm_out"/qsm-post-processed.nii" $loc_final_qsm"
+fi

@@ -6,7 +6,7 @@ import tempfile
 
 class QSMPostProcessor():
 
-    def __init__(self, dir_input_qsmxt:str, dir_input_dicoms:str, dir_output:str, filename_qsm:str):
+    def __init__(self, dir_input_qsmxt:str, dir_input_dicoms:str, dir_output:str, filename_qsm:str, loc_dcm2niix:str):
         self.dir_output = dir_output
         self.loc_qsm = os.path.join(dir_input_qsmxt,  filename_qsm)
         self.loc_t1_qsmSpace = os.path.join(dir_input_qsmxt,  "t1.nii")
@@ -21,6 +21,8 @@ class QSMPostProcessor():
         self.loc_fgatir = os.path.join(dir_output, "fgatir.nii.gz")
         self.loc_t1ToFgatir_mat = os.path.join(dir_output, "t1-to-fgatir.mat") 
         self.loc_t1_fgatirSpace = os.path.join(dir_output, "t1-fgatirSpace.nii.gz") 
+
+        self.loc_dcm2niix = loc_dcm2niix
 
         self._AssertExists(self.loc_qsm)
         self._AssertExists(self.dir_fgatir_dicoms)
@@ -46,7 +48,7 @@ class QSMPostProcessor():
 
     def GetQSMMag(self) -> SimpleITK.Image:
         origFiles = os.listdir(self.dir_qsm_dicoms)
-        RunExecutable("dcm2niix", ["-z", "y", 
+        RunExecutable(self.loc_dcm2niix, ["-z", "y", 
                                     "-b", "n", 
                                     self.dir_qsm_dicoms])
         new_files = [f for f in os.listdir(self.dir_qsm_dicoms) if f not in origFiles]
@@ -63,7 +65,7 @@ class QSMPostProcessor():
             print("Found:", self.loc_fgatir, "- not regenerated")
             return
         
-        RunExecutable("dcm2niix", ["-z", "y", 
+        RunExecutable(self.loc_dcm2niix, ["-z", "y", 
                                     "-b", "n", 
                                     self.dir_fgatir_dicoms])
 
@@ -71,7 +73,7 @@ class QSMPostProcessor():
         if len(locs_niftis) != 1:
             raise Exception("Expected single nifti when converting fgatir but got:" + " ".join(locs_niftis))
         
-        os.rename(os.path.join(self.dir_fgatir_dicoms, locs_niftis[0]), self.loc_fgatir)
+        shutil.move(os.path.join(self.dir_fgatir_dicoms, locs_niftis[0]), self.loc_fgatir)
 
 
     def SkullstripFGATIR(self):
@@ -107,11 +109,12 @@ class QSMPostProcessor():
         moving = self.ITKToAntsIm(mag)
         #moving_mask = ants.image_read(self.loc_qsm_brainmask)
 
-        # initialise with the QSM --> t1 --> fgatir which should be very close to perfect
+        # initialise with the t1 --> fgatir which should be very close to perfect
         # we are just recalculating because of errors seen in some cases between
         # t1 -> mag in earlier stages
+
         result = ants.registration(fixed, moving, "Rigid",
-                                initial_transform=f"[[{self.loc_t1_qsmSpace},1],{self.loc_t1ToFgatir_mat}]",
+                                initial_transform=self.loc_t1ToFgatir_mat,
                                 verbose=True, 
                                 aff_iterations = (1200, 50, 50),
                                 aff_shrink_factors = (2, 1, 1),
@@ -123,7 +126,7 @@ class QSMPostProcessor():
         ants.image_write(mag_aligned_to_fgatir, self.loc_mag_fgatirSpace)
         
         transform = result["fwdtransforms"][0] 
-        os.rename(transform, self.loc_magToFgatir_mat)
+        shutil.move(transform, self.loc_magToFgatir_mat)
 
 
     def RegisterT1ToFGATIR(self) -> ants.ANTsTransform:
@@ -147,7 +150,7 @@ class QSMPostProcessor():
 
             ants.image_write(t1_aligned_to_fgatir, self.loc_t1_fgatirSpace)
 
-            os.rename(result["fwdtransforms"][0], self.loc_t1ToFgatir_mat)
+            shutil.move(result["fwdtransforms"][0], self.loc_t1ToFgatir_mat)
 
 
     def RegisterToFGATIR(self, im, loc_qsm_fgatirSpace) -> SimpleITK.Image:
@@ -196,14 +199,16 @@ class QSMPostProcessor():
 
 def parse_args():
     p = argparse.ArgumentParser(description="""Process qsm xt results to prepare for dicom creation.""")
-    p.add_argument("dir_input_dicoms", help="Path to directory containing fgatir and qsm subdirectories (each holding dicoms only)")
-    p.add_argument("dir_input_qsmxt", help="Path to directory containing all qsm xt results")
-    p.add_argument("qsm_filename", help="Filename (no path) of the QSM image to use within the input directory")
-    p.add_argument("output_dir", help="Path to output directory")
+    p.add_argument("--dir_input_dicoms", help="Path to directory containing fgatir and qsm subdirectories (each holding dicoms only)")
+    p.add_argument("--dir_input_qsmxt", help="Path to directory containing all qsm xt results")
+    p.add_argument("--qsm_filename", help="Filename (no path) of the QSM image to use within the input directory")
+    p.add_argument("--output_dir", help="Path to output directory")
+    p.add_argument("--dcm2niix", help="Path to dcm2niix")
 
     if len(sys.argv) == 1:
         p.print_help()
         sys.exit(1)
+
     return p.parse_args()
 
 
@@ -226,7 +231,7 @@ def check_inputs_and_env(args):
         print(f"Error: output directory '{args.output_dir}' does not exist.")
         sys.exit(1)
 
-    check_cmd("dcm2niix")
+    check_cmd(args.dcm2niix)
 
 
 if __name__ == "__main__":
@@ -236,4 +241,4 @@ if __name__ == "__main__":
 
     args = parse_args()
     check_inputs_and_env(args)
-    QSMPostProcessor(args.dir_input_qsmxt, args.output_dir, args.qsm_filename).Process()
+    QSMPostProcessor(args.dir_input_qsmxt, args.dir_input_dicoms, args.output_dir, args.qsm_filename, args.dcm2niix).Process()
