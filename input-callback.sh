@@ -4,17 +4,17 @@ set -e
 # Executed when input completes to run all other stages of the pipeline
 # Call as:
 # callback-input.sh /full/path/to/sorted-dicoms
-# This path should have two directories:
+# This path should have these directories:
 #       fgatir/<all fgatir dicom files>
 #       qsm/<all qsm dicom files>
-#       T1/<all qsm dicom files>
+#       t1/<all qsm dicom files>
 
 
 dir_sorted_dicoms=$(realpath "$1")
 
 dir_raw_qsm="$dir_sorted_dicoms"/qsm/
 dir_raw_fgatir="$dir_sorted_dicoms"/fgatir/
-dir_raw_t1="$dir_sorted_dicoms"/T1/
+dir_raw_t1="$dir_sorted_dicoms"/t1/
 
 
 dir_processed_qsm=$(mktemp -d)

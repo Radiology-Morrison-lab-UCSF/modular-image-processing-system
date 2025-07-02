@@ -35,23 +35,16 @@ InstallDcm2niix() {
     rm dcm2niix.zip
 }
 
-InstallCreateDicom() {
-    echo Create Dicom Not implemented
-    exit 1
-}
-
 BuildPostProcessing() {
     cd "$dir_this_module"
 
-    if [ -e env ]; then
+    if [ ! -e env ]; then
         python -m venv env
-        source ./env/Scripts/activate.sh
+        source ./env/bin/activate
         pip3 install -r ./requirements.txt
     fi
 
     InstallDcm2niix
-
-    InstallCreateDicom
 
 }
 

@@ -21,42 +21,10 @@ Run the system by running `./main.sh` and providing your dicoms in the way your 
 
 ## Default Stages
 
-The default stages are listed below. 
+The default stages each have their own README.md file. See those directories for more detail.
 
 To debug these default modules, you can read outputs in ./input/nohup.out, or in log files added to your dicom directory. 
 
-### Input
-
-`input/main.sh` will listen for changes to a specified folder and trigger processing when new directories of dicoms (one directory per scan session) are copied into it. **You need to customise this to point to a directory on your system.** Note that this has a default delay of one minute, which may be insufficient if your files are arriving via PACS into that directory. See the code for more details/options.
-
-Alternatively, you can directly trigger processing by calling `/input/on-directory-created.sh <full-path-to-a-directory-containing-your-unsorted-dicoms-for-one-patients-scan>` 
-
-**To ensure the script uses the sequences you want, you must edit the search parameters within `on-directory-created.sh`. Please read comments in that file before proceeding.**
-
-There are two utility scripts here too: `is-directory-monitoring-running.sh` and `kill-directory-monitoring.sh`. They do what their names suggest.
-
-### Processing
-
-This is automatically triggered. You should not need to call this directly.
-
-QSM images are:
-1. converted into NIfTI format
-2. Skull stripped using HD-BET
-3. Processed via QSMxT with default settings
-4. Aligned to the T1 or provided FGATIR
-5. Saved as NIfTI files
-
-### DICOM conversion
-
-This is automatically triggered. You should not need to call this directly.
-
-Converts processed NIfTI files into DICOMs compatible with BrainLab and StealthStation software.
-
-### Output
-
-This is automatically triggered. You should not need to call this directly.
-
-Dicoms are moved to a designated folder, such as a memory stick or network drive.  
 
 ## Integrating with PACS
 
