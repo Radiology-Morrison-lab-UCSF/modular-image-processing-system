@@ -38,6 +38,11 @@ class QSMPostProcessor():
     def Process(self):
         qsm = self.ReadQSMIm()
 
+        # Clamp extreme values as these can ruin our ability to make dicoms
+        # because the dicoms contain Int16 values and normalisation will then
+        # fail to deliver dynamic range
+        qsm = SimpleITK.Clamp(qsm, lowerBound=-0.35, upperBound=0.35)
+
         self.ConvertFGATIRDicoms()
         self.RegisterToFGATIR(qsm, self.loc_qsm_fgatirSpace)
 

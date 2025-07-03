@@ -73,11 +73,12 @@ RunQSMXTPipeline() {
 
 }
 
-AlignWithFGATIR() {
+AlignWithFGATIRAndClampValues() {
 
   cd "$dir_this_module"
   source ./env/bin/activate
   mkdir -p "$dir_aligned_qsm_out"
+  which python
   python -m main --dir_input_dicoms "$dir_dicoms_raw" --dir_input_qsmxt "$dir_qsmxt_out" --qsm_filename "$fn_qsmxt_qsm_processed" --output_dir "$dir_aligned_qsm_out" --dcm2niix "$loc_dcm2niix"
 
   echo "Alignment complete"
@@ -92,7 +93,7 @@ SetPaths "$dir_working"
 
 RunQSMXTPipeline
 
-AlignWithFGATIR
+AlignWithFGATIRAndClampValues
 
 if [[ "$loc_final_qsm" == *.nii.gz ]]; then
   gzip -c "$dir_aligned_qsm_out/qsm-post-processed.nii" > "$loc_final_qsm"

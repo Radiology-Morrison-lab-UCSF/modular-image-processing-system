@@ -30,7 +30,7 @@ bash $(dirname "$BASH_SOURCE[0]")/processing/main.sh "$dir_raw_qsm" "$dir_raw_t1
 
 
 echo "Running Dicom Generation"
-bash $(dirname "$BASH_SOURCE[0]")/dicom-generation/main.sh "$loc_processed_qsm" "$dir_raw_fgatir" "$dir_processed_qsm_dicoms"
+bash $(dirname "$BASH_SOURCE[0]")/dicom-generation/main.sh --processed-qsm "$loc_processed_qsm" --fgatir-dicoms-dir "$dir_raw_fgatir" --out-dir "$dir_processed_qsm_dicoms"
 
 
 echo "Sending Output"
