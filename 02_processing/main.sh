@@ -9,4 +9,6 @@ set -e
 
 dir_this_module=$(realpath $(dirname "$BASH_SOURCE[0]"))/
 
+# Optionally, you can enter additional logic that inspects the provided files to choose which processing pipeline
+# should be execute. Currently it always assumes the default pipeline is appropriate
 bash "$dir_this_module/default-module/main.sh" "$@"

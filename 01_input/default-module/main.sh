@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-# This file should find raw dicoms from the scanner and call ../input-callback.sh when these are found. It can do this as many times as is needed.
+# This is an asyncronous script
+# This file should find raw dicoms from the scanner and call ../../input-callback.sh when these are found. It can do this as many times as is needed.
 # You can replace the internal code with anything you like
 # It must run in bash and takes no arguments
 # e.g. bash ./input/main.sh
@@ -23,7 +24,7 @@ dir_to_watch=$(realpath ~/temp2/)
 # that is much longer than it takes to push your images, or this will be triggered
 # before your images have completed pushing. 
 # For example, you could set it to 30 minutes by changing it to 0:30:00
-nohup "$dir_of_this_script"/DirectoryCreatedWatcher "$dir_to_watch" 0:00:10 bash "$dir_of_this_script/on-directory-created.sh" [path] &
+nohup "$dir_of_this_script"/DirectoryCreatedWatcher "$dir_to_watch" 0:01:00 bash "$dir_of_this_script/on-directory-created.sh" [path] &
 
 echo "Listening for new directories to be added to $dir_to_watch"
 

@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-bash ./input/main.sh
+bash ./input/main.sh "$@"
